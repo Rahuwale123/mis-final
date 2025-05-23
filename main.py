@@ -37,6 +37,8 @@ class ChatResponse(BaseModel):
     profiles: Optional[List[ProfileDetails]] = None
     follow_up: Optional[bool] = False
     follow_up_type: Optional[str] = None  # "appointment", "task", "general"
+    appointment: Optional[bool] = False  # Set to true when appointment is created
+    task: Optional[bool] = False  # Set to true when task is created
 
 def get_conversation_context(user_id: str) -> str:
     if user_id not in conversation_history:
@@ -101,10 +103,14 @@ async def chat(message: ChatMessage):
            - NEVER include code snippets, tool_code, or any programming code
            - NEVER include print statements or debugging information
            - Keep responses natural and conversational
-           - After your response, provide ONLY the JSON data without any additional text or code
+           - After your response, provide ONLY ONE JSON block at the end
+           - The JSON block should be the last thing in your response
+           - Do not include any text after the JSON block
            - Do not include any markdown formatting or code blocks
            - Do not include any explanatory text after the JSON
            - NEVER mention or expose user coordinates in responses
+           - NEVER include multiple JSON blocks in your response
+           - NEVER include JSON in the middle of your response
 
         2. Language Detection and Response:
            - First, detect if the user's message is in Marathi or English
@@ -244,31 +250,91 @@ async def chat(message: ChatMessage):
 
         Keep your response natural and engaging. Don't include any JSON or technical details in your response text.
 
-        After your response, provide the following information in JSON format (but don't include the word 'json' or any markdown formatting):
+        Example of first introduction (with profile):
+        I know a great general physician who can help you with this. Her name is Dr. Aarti Kulkarni. Would you like to book an appointment?
+
         {{
-            "profiles": [],  // Include profiles ONLY when first mentioning a professional or official
-            "follow_up": false,  // Set to true only when expecting a specific follow-up action
-            "follow_up_type": null  // Set to "appointment", "task", or "general" only when follow_up is true
+            "profiles": [
+                {{
+                    "name": "Dr. Aarti Kulkarni",
+                    "designation": "General Physician",
+                    "contact_number": "9876543210",
+                    "specialization": "General Medicine",
+                    "experience": "8 years",
+                    "rating": 4.6
+                }}
+            ],
+            "follow_up": true,
+            "follow_up_type": "appointment",
+            "appointment": false,
+            "task": false
         }}
 
-        Remember to:
-        1. Be empathetic and understanding
-        2. Use emojis naturally
-        3. Keep it casual and friendly
-        4. Maintain context from previous messages
-        5. Follow the exact conversation flow for appointments and civic issues
-        6. Only include profiles when first mentioning someone
-        7. Use "Secured Number" for MLAs and top officers
-        8. Generate real, contextual data for Parbhani
-        9. Use area names and landmarks instead of coordinates
-        10. Use proper honorifics for officials
-        11. Detect user's language and respond accordingly
-        12. Use current date and time appropriately in responses
-        13. NEVER include code snippets or programming code
-        14. Provide ONLY the JSON data after your response, without any additional text
-        15. NEVER mention or expose user coordinates in responses
-        16. ALWAYS use the exact official names and designations from the Current Officials Information section
-        17. ALWAYS provide causes and remedies for health issues"""
+        Example of appointment confirmation (MUST include profile):
+        Perfect! Your appointment with Dr. Aarti Kulkarni is confirmed for tomorrow at 10 AM.
+
+        {{
+            "profiles": [
+                {{
+                    "name": "Dr. Aarti Kulkarni",
+                    "designation": "General Physician",
+                    "contact_number": "9876543210",
+                    "specialization": "General Medicine",
+                    "experience": "8 years",
+                    "rating": 4.6
+                }}
+            ],
+            "follow_up": false,
+            "follow_up_type": null,
+            "appointment": true,
+            "task": false
+        }}
+
+        Example of intermediate response (NO profile):
+        How about scheduling for tomorrow at 10 AM? Does that work for you?
+
+        {{
+            "profiles": [],
+            "follow_up": true,
+            "follow_up_type": "appointment",
+            "appointment": false,
+            "task": false
+        }}
+
+        Example of task created response:
+        I've reported the pothole issue to the municipal department. They will take care of it soon.
+
+        {{
+            "profiles": [
+                {{
+                    "name": "Shri. Rahul Deshmukh",
+                    "designation": "Municipal Commissioner",
+                    "contact_number": "Secured Number",
+                    "specialization": "Municipal Administration",
+                    "experience": "Current Term",
+                    "rating": 4.5
+                }}
+            ],
+            "follow_up": false,
+            "follow_up_type": null,
+            "appointment": false,
+            "task": true
+        }}
+
+        Remember:
+        1. Include profiles ONLY in these cases:
+           - When first introducing a professional/official
+           - When appointment=true (MUST include profile)
+           - When task=true (MUST include profile)
+        2. DO NOT include profiles in:
+           - Intermediate responses
+           - Follow-up questions
+           - General conversation
+        3. The JSON must be the last thing in your response
+        4. Do not include any text after the JSON
+        5. Keep the profile information in the same JSON block as other data
+        6. ALWAYS include the complete profile when appointment=true or task=true
+        """
         
         # Get response from Gemini
         response = model.generate_content(prompt)
@@ -321,15 +387,17 @@ async def chat(message: ChatMessage):
                 return ChatResponse(
                     response=response_text,
                     profiles=json_data.get('profiles', [{
-                        "name": "Generate real name in same language as response",
-                        "designation": "Generate real designation in same language as response",
-                        "contact_number": "Generate valid 10-digit number",
-                        "specialization": "Generate real specialization in same language as response",
-                        "experience": "Generate real experience in same language as response",
-                        "rating": 4.5
-                    }]),
+                        "name": "Dr. Aarti Kulkarni",
+                        "designation": "General Physician",
+                        "contact_number": "9876543210",
+                        "specialization": "General Medicine",
+                        "experience": "8 years",
+                        "rating": 4.6
+                    }]) if json_data.get('appointment', False) or json_data.get('task', False) else json_data.get('profiles', []),  # Include profile when appointment or task is true
                     follow_up=json_data.get('follow_up', False),
-                    follow_up_type=json_data.get('follow_up_type')
+                    follow_up_type=json_data.get('follow_up_type'),
+                    appointment=json_data.get('appointment', False),
+                    task=json_data.get('task', False)
                 )
         except Exception as e:
             print(f"Error parsing JSON: {str(e)}")
