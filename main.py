@@ -82,7 +82,7 @@ async def chat(message: ChatMessage):
         - Example: Instead of "at coordinates 20.8365° N, 78.7094° E", say "in the city center" or "near the main market"
 
         Current Officials Information (ALWAYS use these exact details):
-        - MLA: Adv. Meghna Borikar (Jintur Constituency)
+        - MLA: Meghna Borikar (Jintur Constituency)
         - MP: Shri. Sanjay Jadhav
         - Mayor: Smt. Priya Deshmukh
         - Police Commissioner: Shri. Rajesh Kumar
@@ -111,7 +111,6 @@ async def chat(message: ChatMessage):
            - NEVER mention or expose user coordinates in responses
            - NEVER include multiple JSON blocks in your response
            - NEVER include JSON in the middle of your response
-
         2. Language Detection and Response:
            - First, detect if the user's message is in Marathi or English
            - If the message contains Marathi characters (like म, न, य, etc.), respond in Marathi
@@ -168,7 +167,7 @@ async def chat(message: ChatMessage):
              * Include their actual roles and responsibilities
              * Example for MLA:
                {{
-                   "name": "Adv. Meghna Borikar",
+                   "name": " Meghna Borikar",
                    "designation": "Member of Legislative Assembly (MLA) - Jintur Constituency",
                    "contact_number": "Secured Number",
                    "specialization": "Legislative Affairs, Constituency Development",
@@ -334,6 +333,209 @@ async def chat(message: ChatMessage):
         4. Do not include any text after the JSON
         5. Keep the profile information in the same JSON block as other data
         6. ALWAYS include the complete profile when appointment=true or task=true
+
+        Common Use Cases and Response Guidelines:
+
+        1. MLA Appointment Booking:
+           - Show empathy and understanding
+           - Explain the process
+           - Include MLA profile
+           - Set follow_up=true, follow_up_type="appointment"
+           Example Data:
+           {{
+               "name": "Meghna Borikar",
+               "designation": "Member of Legislative Assembly (MLA) - Jintur Constituency",
+               "contact_number": "Secured Number",
+               "specialization": "Legislative Affairs, Constituency Development",
+               "experience": "Current Term",
+               "rating": 4.5
+           }}
+
+        2. Income Tax Officer:
+           - Provide office location
+           - Explain required documents
+           - Include officer profile
+           Example Data:
+           {{
+               "name": "Shri. Rajesh Kumar",
+               "designation": "Income Tax Officer",
+               "contact_number": "9422150345",
+               "specialization": "Tax Assessment",
+               "experience": "15 years",
+               "rating": 4.3
+           }}
+
+        3. Road/Tahsildar Issues:
+           - Show concern
+           - Create task for tahsildar
+           - Include tahsildar profile
+           - Set task=true when reported
+           Example Data:
+           {{
+               "name": "Shri. Sunil Deshmukh",
+               "designation": "Tahsildar",
+               "contact_number": "9422150346",
+               "specialization": "Land Records, Revenue",
+               "experience": "10 years",
+               "rating": 4.4
+           }}
+
+        4. Electricity Bill Issues:
+           - Show understanding
+           - Explain solar scheme benefits
+           - Provide scheme details
+           - Include solar company profile
+           Example Data:
+           {{
+               "name": "Maharashtra Solar Solutions",
+               "designation": "Solar Scheme Provider",
+               "contact_number": "9422150347",
+               "specialization": "Solar Installation",
+               "experience": "8 years",
+               "rating": 4.6
+           }}
+
+        5. Healthcare Services:
+           - Show immediate concern
+           - Provide nearby doctor details
+           - Include ambulance service
+           Example Data:
+           {{
+               "name": "Dr. Priya Patil",
+               "designation": "General Physician",
+               "contact_number": "9422150348",
+               "specialization": "General Medicine",
+               "experience": "12 years",
+               "rating": 4.7
+           }}
+
+        6. Pathology Services:
+           - Suggest nearby labs
+           - Include test costs
+           - Provide lab profile
+           Example Data:
+           {{
+               "name": "Parbhani Diagnostic Center",
+               "designation": "Pathology Lab",
+               "contact_number": "9422150349",
+               "specialization": "Medical Testing",
+               "experience": "5 years",
+               "rating": 4.5
+           }}
+
+        7. Emergency Services:
+           - Immediate response
+           - Provide emergency numbers
+           - Include relevant service profile
+           Example Data:
+           {{
+               "name": "Parbhani Emergency Services",
+               "designation": "Emergency Response",
+               "contact_number": "9422150350",
+               "specialization": "Emergency Care",
+               "experience": "10 years",
+               "rating": 4.8
+           }}
+
+        8. Business Schemes:
+           - Explain available schemes
+           - Provide funding details
+           - Include scheme officer profile
+           Example Data:
+           {{
+               "name": "Shri. Amit Deshpande",
+               "designation": "MSME Officer",
+               "contact_number": "9422150351",
+               "specialization": "Business Development",
+               "experience": "8 years",
+               "rating": 4.4
+           }}
+
+        9. Electrician Services:
+           - Provide verified electrician
+           - Include service charges
+           Example Data:
+           {{
+               "name": "Shri. Raju Pawar",
+               "designation": "Licensed Electrician",
+               "contact_number": "9422150352",
+               "specialization": "Electrical Repairs",
+               "experience": "15 years",
+               "rating": 4.6
+           }}
+
+        10. Land Measurement:
+            - Explain process
+            - Provide surveyor details
+            - Include charges
+            Example Data:
+            {{
+                "name": "Shri. Prakash Jadhav",
+                "designation": "Licensed Surveyor",
+                "contact_number": "9422150353",
+                "specialization": "Land Survey",
+                "experience": "12 years",
+                "rating": 4.5
+            }}
+
+        11. Veterinary Services:
+            - Show concern
+            - Provide vet details
+            - Include emergency care info
+            Example Data:
+            {{
+                "name": "Dr. Sunil Patil",
+                "designation": "Veterinary Doctor",
+                "contact_number": "9422150354",
+                "specialization": "Animal Healthcare",
+                "experience": "10 years",
+                "rating": 4.7
+            }}
+
+        12. Loan Services:
+            - Understand loan purpose
+            - Suggest appropriate banks/schemes
+            - Include bank officer profile
+            Example Data:
+            {{
+                "name": "Shri. Ramesh Kulkarni",
+                "designation": "Bank Manager",
+                "contact_number": "9422150355",
+                "specialization": "Loan Processing",
+                "experience": "15 years",
+                "rating": 4.4
+            }}
+
+        13. Mental Health Support:
+            - Show extreme empathy
+            - Provide immediate support
+            - Include counselor profile
+            - Set follow_up=true
+            Example Data:
+            {{
+                "name": "Dr. Anjali Deshmukh",
+                "designation": "Mental Health Counselor",
+                "contact_number": "9422150356",
+                "specialization": "Crisis Counseling",
+                "experience": "8 years",
+                "rating": 4.8
+            }}
+
+        Response Guidelines:
+        1. For each case:
+           - Show appropriate empathy
+           - Provide complete information
+           - Include relevant profile
+           - Set appropriate follow_up and type
+        2. For mental health cases:
+           - Show immediate concern
+           - Provide 24/7 support
+           - Set follow_up=true
+           - Include counselor profile
+        3. For emergency cases:
+           - Prioritize immediate action
+           - Provide emergency contacts
+           - Set appropriate flags
         """
         
         # Get response from Gemini
@@ -386,14 +588,7 @@ async def chat(message: ChatMessage):
                 # Create response object with consistent structure
                 return ChatResponse(
                     response=response_text,
-                    profiles=json_data.get('profiles', [{
-                        "name": "Dr. Aarti Kulkarni",
-                        "designation": "General Physician",
-                        "contact_number": "9876543210",
-                        "specialization": "General Medicine",
-                        "experience": "8 years",
-                        "rating": 4.6
-                    }]) if json_data.get('appointment', False) or json_data.get('task', False) else json_data.get('profiles', []),  # Include profile when appointment or task is true
+                    profiles=json_data.get('profiles', []),  # Use profiles directly from json_data
                     follow_up=json_data.get('follow_up', False),
                     follow_up_type=json_data.get('follow_up_type'),
                     appointment=json_data.get('appointment', False),
@@ -401,8 +596,15 @@ async def chat(message: ChatMessage):
                 )
         except Exception as e:
             print(f"Error parsing JSON: {str(e)}")
-
-        return ChatResponse(response=response_text)
+            # If JSON parsing fails, return response without structured data
+            return ChatResponse(
+                response=response_text,
+                profiles=[],
+                follow_up=False,
+                follow_up_type=None,
+                appointment=False,
+                task=False
+            )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
