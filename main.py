@@ -269,29 +269,27 @@ async def chat(message: ChatMessage):
             "task": false
         }}
 
-        Example of simple greeting response (MUST include JSON):
-        Hello! How can I help you today? 😊
+        Example of appointment confirmation (MUST include profile):
+        Perfect! Your appointment with Dr. Aarti Kulkarni is confirmed for tomorrow at 10 AM.
 
         {{
-            "profiles": [],
+            "profiles": [
+                {{
+                    "name": "Dr. Aarti Kulkarni",
+                    "designation": "General Physician",
+                    "contact_number": "9876543210",
+                    "specialization": "General Medicine",
+                    "experience": "8 years",
+                    "rating": 4.6
+                }}
+            ],
             "follow_up": false,
             "follow_up_type": null,
-            "appointment": false,
+            "appointment": true,
             "task": false
         }}
 
-        Example of intermediate response (NO profile):
-        How about scheduling for tomorrow at 10 AM? Does that work for you?
-
-        {{
-            "profiles": [],
-            "follow_up": true,
-            "follow_up_type": "appointment",
-            "appointment": false,
-            "task": false
-        }}
-
-        Example of task created response:
+        Example of task creation (MUST include profile):
         I've reported the pothole issue to the municipal department. They will take care of it soon.
 
         {{
@@ -311,19 +309,52 @@ async def chat(message: ChatMessage):
             "task": true
         }}
 
+        Example of task reporting (initial):
+        I understand there's a pothole issue. Would you like me to report this to the municipal department?
+
+        {{
+            "profiles": [
+                {{
+                    "name": "Shri. Rahul Deshmukh",
+                    "designation": "Municipal Commissioner",
+                    "contact_number": "Secured Number",
+                    "specialization": "Municipal Administration",
+                    "experience": "Current Term",
+                    "rating": 4.5
+                }}
+            ],
+            "follow_up": true,
+            "follow_up_type": "task",
+            "appointment": false,
+            "task": false
+        }}
+
+        Example of intermediate response (NO profile):
+        How about scheduling for tomorrow at 10 AM? Does that work for you?
+
+        {{
+            "profiles": [],
+            "follow_up": true,
+            "follow_up_type": "appointment",
+            "appointment": false,
+            "task": false
+        }}
+
         Remember:
-        1. Include profiles ONLY in these cases:
-           - When first introducing a professional/official
-           - When appointment=true (MUST include profile)
-           - When task=true (MUST include profile)
-        2. DO NOT include profiles in:
-           - Intermediate responses
-           - Follow-up questions
-           - General conversation
-        3. The JSON must be the last thing in your response
-        4. Do not include any text after the JSON
-        5. Keep the profile information in the same JSON block as other data
-        6. ALWAYS include the complete profile when appointment=true or task=true
+        1. Set appointment=true ONLY when:
+           - User has confirmed the appointment time
+           - Appointment is fully booked
+        2. Set task=true ONLY when:
+           - User has confirmed the task creation
+           - Task is fully reported to the department
+        3. Keep follow_up=true while:
+           - Waiting for user confirmation
+           - In the middle of booking process
+           - In the middle of task reporting
+        4. Set follow_up=false when:
+           - Appointment is confirmed (appointment=true)
+           - Task is created (task=true)
+           - Process is complete
 
         Common Use Cases and Response Guidelines:
 
