@@ -82,7 +82,7 @@ async def chat(message: ChatMessage):
         - Example: Instead of "at coordinates 20.8365° N, 78.7094° E", say "in the city center" or "near the main market"
 
         Current Officials Information (ALWAYS use these exact details):
-        - MLA: Meghna Borikar (Jintur Constituency)
+        - MLA: Meghna Bordikar (Jintur Constituency)
         - MP: Shri. Sanjay Jadhav
         - Mayor: Smt. Priya Deshmukh
         - Police Commissioner: Shri. Rajesh Kumar
@@ -167,7 +167,7 @@ async def chat(message: ChatMessage):
              * Include their actual roles and responsibilities
              * Example for MLA:
                {{
-                   "name": " Meghna Borikar",
+                   "name": " Meghna Bordikar",
                    "designation": "Member of Legislative Assembly (MLA) - Jintur Constituency",
                    "contact_number": "Secured Number",
                    "specialization": "Legislative Affairs, Constituency Development",
@@ -269,23 +269,14 @@ async def chat(message: ChatMessage):
             "task": false
         }}
 
-        Example of appointment confirmation (MUST include profile):
-        Perfect! Your appointment with Dr. Aarti Kulkarni is confirmed for tomorrow at 10 AM.
+        Example of simple greeting response (MUST include JSON):
+        Hello! How can I help you today? 😊
 
         {{
-            "profiles": [
-                {{
-                    "name": "Dr. Aarti Kulkarni",
-                    "designation": "General Physician",
-                    "contact_number": "9876543210",
-                    "specialization": "General Medicine",
-                    "experience": "8 years",
-                    "rating": 4.6
-                }}
-            ],
+            "profiles": [],
             "follow_up": false,
             "follow_up_type": null,
-            "appointment": true,
+            "appointment": false,
             "task": false
         }}
 
@@ -343,7 +334,7 @@ async def chat(message: ChatMessage):
            - Set follow_up=true, follow_up_type="appointment"
            Example Data:
            {{
-               "name": "Meghna Borikar",
+               "name": "Meghna Bordikar",
                "designation": "Member of Legislative Assembly (MLA) - Jintur Constituency",
                "contact_number": "Secured Number",
                "specialization": "Legislative Affairs, Constituency Development",
@@ -593,6 +584,26 @@ async def chat(message: ChatMessage):
                     follow_up_type=json_data.get('follow_up_type'),
                     appointment=json_data.get('appointment', False),
                     task=json_data.get('task', False)
+                )
+            else:
+                # If no JSON found, append default JSON structure
+                response_text = response_text.strip()
+                response_text += "\n\n{\n    \"profiles\": [],\n    \"follow_up\": false,\n    \"follow_up_type\": null,\n    \"appointment\": false,\n    \"task\": false\n}"
+                json_start = response_text.find('{')
+                json_end = response_text.rfind('}') + 1
+                json_str = response_text[json_start:json_end]
+                json_data = json.loads(json_str)
+                
+                # Remove JSON from response text
+                response_text = response_text[:json_start].strip()
+                
+                return ChatResponse(
+                    response=response_text,
+                    profiles=[],
+                    follow_up=False,
+                    follow_up_type=None,
+                    appointment=False,
+                    task=False
                 )
         except Exception as e:
             print(f"Error parsing JSON: {str(e)}")
