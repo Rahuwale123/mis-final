@@ -99,19 +99,7 @@ async def chat(message: ChatMessage):
         The user's new message is: {message.message}
 
         Important Instructions:
-        1. Language Detection and Response:
-           - First, detect the language of the user's message
-           - If the message contains Marathi characters (like म, न, य, etc.), respond in Marathi
-           - If the message is in English, respond in English
-           - Never mix languages in the same response
-           - Keep the friendly tone in both languages
-           - If user asks in Marathi, ALWAYS respond in Marathi
-           - If user asks in English, ALWAYS respond in English
-           - If user asks in Hinglish, respond in the same style
-           - Maintain consistent language throughout the conversation
-           - Do not switch languages unless user switches first
-
-        2. Response Format:
+        1. Response Format:
            - NEVER include code snippets, tool_code, or any programming code
            - NEVER include print statements or debugging information
            - Keep responses natural and conversational
@@ -123,6 +111,13 @@ async def chat(message: ChatMessage):
            - NEVER mention or expose user coordinates in responses
            - NEVER include multiple JSON blocks in your response
            - NEVER include JSON in the middle of your response
+        2. Language Detection and Response:
+           - First, detect if the user's message is in Marathi or English
+           - If the message contains Marathi characters (like म, न, य, etc.), respond in Marathi
+           - If the message is in English, respond in English
+           - Never mix languages in the same response
+           - Keep the friendly tone in both languages
+
         3. Healthcare Response Guidelines:
            - When user mentions any health issue:
              1. First, show empathy and concern
@@ -251,73 +246,93 @@ async def chat(message: ChatMessage):
         - "ठीक आहे, मी तुम्हाला मदत करतो" (Okay, I'll help you)
         - "चला बुक करूया" (Let's book it)
         - "झालं! ✅" (Done! ✅)
-        - "तुमची समस्या समजली" (I understand your problem)
-        - "मी तुम्हाला मदत करेन" (I will help you)
-        - "तुम्ही सांगा, मी ऐकतो" (Tell me, I'm listening)
 
-        Hinglish phrases to use when user speaks in Hinglish:
-        - "Hi! Kaise ho?" (Hi! How are you?)
-        - "Kya help chahiye?" (What help do you need?)
-        - "Theek hai, main help karta hoon" (Okay, I'll help)
-        - "Chalo book karte hain" (Let's book it)
-        - "Ho gaya! ✅" (Done! ✅)
-        - "Aapki problem samajh gayi" (I understand your problem)
-        - "Main help karunga" (I will help you)
-        - "Batao, main sun raha hoon" (Tell me, I'm listening)
+        Keep your response natural and engaging. Don't include any JSON or technical details in your response text.
 
-        Example of Marathi response:
-        नमस्कार! मी तुम्हाला कशी मदत करू शकतो?
+        Example of first introduction (with profile):
+        I know a great general physician who can help you with this. Her name is Dr. Aarti Kulkarni. Would you like to book an appointment?
 
         {{
-            "profiles": [],
-            "follow_up": false,
-            "follow_up_type": null,
+            "profiles": [
+                {{
+                    "name": "Dr. Aarti Kulkarni",
+                    "designation": "General Physician",
+                    "contact_number": "9876543210",
+                    "specialization": "General Medicine",
+                    "experience": "8 years",
+                    "rating": 4.6
+                }}
+            ],
+            "follow_up": true,
+            "follow_up_type": "appointment",
             "appointment": false,
             "task": false
         }}
 
-        Example of Hinglish response:
-        Hi! Main aapki kya help kar sakta hoon?
+        Example of appointment confirmation (MUST include profile):
+        Perfect! Your appointment with Dr. Aarti Kulkarni is confirmed for tomorrow at 10 AM.
+
+        {{
+            "profiles": [
+                {{
+                    "name": "Dr. Aarti Kulkarni",
+                    "designation": "General Physician",
+                    "contact_number": "9876543210",
+                    "specialization": "General Medicine",
+                    "experience": "8 years",
+                    "rating": 4.6
+                }}
+            ],
+            "follow_up": false,
+            "follow_up_type": null,
+            "appointment": true,
+            "task": false
+        }}
+
+        Example of intermediate response (NO profile):
+        How about scheduling for tomorrow at 10 AM? Does that work for you?
 
         {{
             "profiles": [],
-            "follow_up": false,
-            "follow_up_type": null,
+            "follow_up": true,
+            "follow_up_type": "appointment",
             "appointment": false,
             "task": false
         }}
 
-        Example of English response:
-        Hello! How can I help you today?
+        Example of task created response:
+        I've reported the pothole issue to the municipal department. They will take care of it soon.
 
         {{
-            "profiles": [],
+            "profiles": [
+                {{
+                    "name": "Shri. Rahul Deshmukh",
+                    "designation": "Municipal Commissioner",
+                    "contact_number": "Secured Number",
+                    "specialization": "Municipal Administration",
+                    "experience": "Current Term",
+                    "rating": 4.5
+                }}
+            ],
             "follow_up": false,
             "follow_up_type": null,
             "appointment": false,
-            "task": false
+            "task": true
         }}
 
         Remember:
-        1. Language Consistency:
-           - Always detect user's language first
-           - Respond in the same language
-           - Never mix languages in one response
-           - Keep the tone consistent with the language
-        2. Set appointment=true ONLY when:
-           - User has confirmed the appointment time
-           - Appointment is fully booked
-        2. Set task=true ONLY when:
-           - User has confirmed the task creation
-           - Task is fully reported to the department
-        3. Keep follow_up=true while:
-           - Waiting for user confirmation
-           - In the middle of booking process
-           - In the middle of task reporting
-        4. Set follow_up=false when:
-           - Appointment is confirmed (appointment=true)
-           - Task is created (task=true)
-           - Process is complete
+        1. Include profiles ONLY in these cases:
+           - When first introducing a professional/official
+           - When appointment=true (MUST include profile)
+           - When task=true (MUST include profile)
+        2. DO NOT include profiles in:
+           - Intermediate responses
+           - Follow-up questions
+           - General conversation
+        3. The JSON must be the last thing in your response
+        4. Do not include any text after the JSON
+        5. Keep the profile information in the same JSON block as other data
+        6. ALWAYS include the complete profile when appointment=true or task=true
 
         Common Use Cases and Response Guidelines:
 
@@ -535,86 +550,50 @@ async def chat(message: ChatMessage):
 
         # Extract JSON from response
         try:
-            import json  # Move import to top of try block
-            
-            # First attempt: Try to find JSON in the response
+            # Find JSON in the response
             json_start = response_text.find('{')
             json_end = response_text.rfind('}') + 1
             
-            if json_start != -1 and json_end != -1:
-                json_str = response_text[json_start:json_end]
-                try:
-                    json_data = json.loads(json_str)
-                    
-                    # Remove JSON and any markdown formatting from response text
-                    response_text = response_text[:json_start].strip()
-                    response_text = response_text.replace('```json', '').replace('```', '').strip()
-                    
-                    # Print cleaned response
-                    print("\n" + "="*50)
-                    print("Cleaned Response:")
-                    print(response_text)
-                    print("="*50 + "\n")
-
-                    # Print structured data
-                    print("\n" + "="*50)
-                    print("Structured Data:")
-                    print(json.dumps(json_data, indent=2))
-                    print("="*50 + "\n")
-                    
-                    # Store the conversation
-                    conversation_history[message.user_id].append({
-                        'timestamp': datetime.now().isoformat(),
-                        'user_message': message.message,
-                        'assistant_response': response_text
-                    })
-
-                    # Keep only last 10 messages per user
-                    if len(conversation_history[message.user_id]) > 10:
-                        conversation_history[message.user_id] = conversation_history[message.user_id][-10:]
-                    
-                    # Create response object with consistent structure
-                    return ChatResponse(
-                        response=response_text,
-                        profiles=json_data.get('profiles', []),
-                        follow_up=json_data.get('follow_up', False),
-                        follow_up_type=json_data.get('follow_up_type'),
-                        appointment=json_data.get('appointment', False),
-                        task=json_data.get('task', False)
-                    )
-                except json.JSONDecodeError:
-                    # If JSON parsing fails, try second attempt
-                    pass
+            # If no JSON found, create a default response
+            if json_start == -1 or json_end == -1:
+                print("No JSON found in response, using default structure")
+                # Store the conversation
+                conversation_history[message.user_id].append({
+                    'timestamp': datetime.now().isoformat(),
+                    'user_message': message.message,
+                    'assistant_response': response_text
+                })
+                
+                # Return default response structure
+                return ChatResponse(
+                    response=response_text,
+                    profiles=[],
+                    follow_up=False,
+                    follow_up_type=None,
+                    appointment=False,
+                    task=False
+                )
             
-            # Second attempt: Try to find JSON in markdown code blocks
-            if '```json' in response_text:
-                json_start = response_text.find('```json') + 7
-                json_end = response_text.find('```', json_start)
-                if json_start != -1 and json_end != -1:
-                    json_str = response_text[json_start:json_end].strip()
-                    try:
-                        json_data = json.loads(json_str)
-                        response_text = response_text[:response_text.find('```json')].strip()
-                        return ChatResponse(
-                            response=response_text,
-                            profiles=json_data.get('profiles', []),
-                            follow_up=json_data.get('follow_up', False),
-                            follow_up_type=json_data.get('follow_up_type'),
-                            appointment=json_data.get('appointment', False),
-                            task=json_data.get('task', False)
-                        )
-                    except json.JSONDecodeError:
-                        pass
+            # Extract and parse JSON
+            json_str = response_text[json_start:json_end]
+            import json
+            json_data = json.loads(json_str)
             
-            # Third attempt: If no valid JSON found, append default structure
-            response_text = response_text.strip()
-            default_json = {
-                "profiles": [],
-                "follow_up": False,
-                "follow_up_type": None,
-                "appointment": False,
-                "task": False
-            }
+            # Remove JSON and any markdown formatting from response text
+            response_text = response_text[:json_start].strip()
+            response_text = response_text.replace('```json', '').replace('```', '').strip()
+            
+            # Print cleaned response
+            print("\n" + "="*50)
+            print("Cleaned Response:")
+            print(response_text)
+            print("="*50 + "\n")
+
+            # Print structured data
+            print("\n" + "="*50)
+            print("Structured Data:")
+            print(json.dumps(json_data, indent=2))
+            print("="*50 + "\n")
             
             # Store the conversation
             conversation_history[message.user_id].append({
@@ -627,18 +606,18 @@ async def chat(message: ChatMessage):
             if len(conversation_history[message.user_id]) > 10:
                 conversation_history[message.user_id] = conversation_history[message.user_id][-10:]
             
+            # Create response object with consistent structure
             return ChatResponse(
                 response=response_text,
-                profiles=[],
-                follow_up=False,
-                follow_up_type=None,
-                appointment=False,
-                task=False
+                profiles=json_data.get('profiles', []),
+                follow_up=json_data.get('follow_up', False),
+                follow_up_type=json_data.get('follow_up_type'),
+                appointment=json_data.get('appointment', False),
+                task=json_data.get('task', False)
             )
-            
         except Exception as e:
             print(f"Error parsing JSON: {str(e)}")
-            # If all parsing attempts fail, return response without structured data
+            # If JSON parsing fails, return response without structured data
             return ChatResponse(
                 response=response_text,
                 profiles=[],
