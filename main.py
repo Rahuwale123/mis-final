@@ -274,7 +274,7 @@ async def chat(message: ChatMessage):
         10. ALWAYS check previous confirmations
         11. NEVER use null values
         12. NEVER repeat confirmations
-        13. NEVER include profiles in final confirmation
+        13. NEVER include profiles in final confirmation and never repeat the same question
         14. NEVER ask for confirmation more than once
         15. NEVER repeat the same question
 
